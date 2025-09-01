@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Nested Checkbox</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0;
+      }
+
+      .container {
+        background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+        padding: 30px;
+        border-radius: 16px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        width: 380px;
+        animation: fadeIn 0.6s ease-in-out;
+      }
+
+      h2 {
+        text-align: center;
+        color: #065f46;
+        margin-bottom: 20px;
+      }
+
+      .category {
+        margin-top: 15px;
+      }
+
+      .items {
+        margin-left: 25px;
+        margin-top: 8px;
+        padding-left: 15px;
+        border-left: 3px solid #e0e7ff;
+      }
+
+      label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        margin: 6px 0;
+        padding: 6px 8px;
+        border-radius: 8px;
+        transition: background 0.2s ease;
+      }
+
+      label:hover {
+        background: #f3f4f6;
+      }
+
+      input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: #2563eb;
+        cursor: pointer;
+        border-radius: 4px;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(15px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Nested Checkbox</h2>
+
+      <label>
+        <input type="checkbox" id="selectAll" />
+        <strong>Select All</strong>
+      </label>
+
+      <div class="category">
+        <label>
+          <input
+            type="checkbox"
+            class="category-checkbox"
+            data-category="fruits"
+          />
+          <span>Fruits</span>
+        </label>
+        <div class="items">
+          <label
+            ><input type="checkbox" class="fruit child" data-parent="fruits" />
+            Apple</label
+          >
+          <label
+            ><input type="checkbox" class="fruit child" data-parent="fruits" />
+            Banana</label
+          >
+          <label
+            ><input type="checkbox" class="fruit child" data-parent="fruits" />
+            Orange</label
+          >
+        </div>
+      </div>
+
+      <div class="category">
+        <label>
+          <input
+            type="checkbox"
+            class="category-checkbox"
+            data-category="vegetables"
+          />
+          <span>Vegetables</span>
+        </label>
+        <div class="items">
+          <label
+            ><input
+              type="checkbox"
+              class="vegetable child"
+              data-parent="vegetables"
+            />
+            Carrot</label
+          >
+          <label
+            ><input
+              type="checkbox"
+              class="vegetable child"
+              data-parent="vegetables"
+            />
+            Broccoli</label
+          >
+          <label
+            ><input
+              type="checkbox"
+              class="vegetable child"
+              data-parent="vegetables"
+            />
+            Potato</label
+          >
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const selectAll = document.getElementById("selectAll");
+      const categoryCheckboxes =
+        document.querySelectorAll(".category-checkbox");
+      const childCheckboxes = document.querySelectorAll(".child");
+
+      selectAll.addEventListener("change", (e) => {
+        const checked = e.target.checked;
+        [...categoryCheckboxes, ...childCheckboxes].forEach(
+          (cb) => (cb.checked = checked)
+        );
+      });
+
+      categoryCheckboxes.forEach((cb) => {
+        cb.addEventListener("change", (e) => {
+          const checked = e.target.checked;
+          const category = cb.dataset.category;
+          document
+            .querySelectorAll(`.child[data-parent="${category}"]`)
+            .forEach((child) => (child.checked = checked));
+          updateSelectAll();
+        });
+      });
+
+      childCheckboxes.forEach((cb) => {
+        cb.addEventListener("change", () => {
+          const parentCategory = cb.dataset.parent;
+          const parentCheckbox = document.querySelector(
+            `.category-checkbox[data-category="${parentCategory}"]`
+          );
+          const siblings = document.querySelectorAll(
+            `.child[data-parent="${parentCategory}"]`
+          );
+          parentCheckbox.checked = [...siblings].every((sib) => sib.checked);
+          updateSelectAll();
+        });
+      });
+
+      function updateSelectAll() {
+        const allChecked = [...childCheckboxes].every((cb) => cb.checked);
+        selectAll.checked = allChecked;
+      }
+    </script>
+  </body>
+</html>
